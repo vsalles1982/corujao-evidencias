@@ -1,4 +1,6 @@
 # Manifesto SHA-256 — Solicitação 020
+# HISTÓRICO: substituído por hashes-sha256-021.txt. Os hashes abaixo são os da
+# publicação original e não devem ser tratados como atuais.
 # Gerado ao final da execução. O proprio manifesto nao contem seu hash.
 
 f20acd15758679e81cc596fff0bfa5c80e7e524fe978893bbd4531d6802b0bac  docs/codigo-fase0/bootstrap.py

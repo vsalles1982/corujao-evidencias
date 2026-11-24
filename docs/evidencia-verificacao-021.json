@@ -1,0 +1,135 @@
+{
+  "solicitacao": "021",
+  "data": "2026-11-24",
+  "finalidade": "Verificação final offline da Fase 0 após as correções A, B, C e D.",
+  "python": "3.14.8",
+  "sqlite_version": "3.54.0",
+  "migrations": [
+    [
+      "0001",
+      "2026-11-24T09:26:06.805750Z",
+      "Cria as nove tabelas da Fase 0, índices parciais e triggers de proteção."
+    ],
+    [
+      "0002",
+      "2026-11-24T10:06:45.619654Z",
+      "Permite 0 e 1 em sources.operational_enabled e separa unlinked_local de generic_quotes."
+    ]
+  ],
+  "sources_ddl_aceita_0_e_1": true,
+  "sources_ddl_antiga_presente": false,
+  "tabelas": [
+    [
+      "bootstraps"
+    ],
+    [
+      "generic_quotes"
+    ],
+    [
+      "identified_offers"
+    ],
+    [
+      "observations"
+    ],
+    [
+      "route_dates"
+    ],
+    [
+      "routes"
+    ],
+    [
+      "schema_migrations"
+    ],
+    [
+      "settings"
+    ],
+    [
+      "sources"
+    ]
+  ],
+  "indices": [
+    "uq_offer_oneway",
+    "uq_offer_roundtrip",
+    "uq_quote_source_id",
+    "uq_route_date_oneway",
+    "uq_route_date_roundtrip"
+  ],
+  "triggers": 17,
+  "integrity_check": "ok",
+  "foreign_key_check": [],
+  "journal_mode": "wal",
+  "foreign_keys": 1,
+  "busy_timeout_ms": 5000,
+  "fontes": [
+    [
+      "decolar",
+      "not_evaluated",
+      0
+    ],
+    [
+      "google_flights",
+      "not_evaluated",
+      0
+    ],
+    [
+      "latam",
+      "not_evaluated",
+      0
+    ],
+    [
+      "turismocity",
+      "not_evaluated",
+      0
+    ]
+  ],
+  "contagens": {
+    "bootstraps": 1,
+    "generic_quotes": 0,
+    "identified_offers": 0,
+    "observations": 0,
+    "route_dates": 0,
+    "routes": 0,
+    "schema_migrations": 2,
+    "settings": 11,
+    "sources": 4
+  },
+  "schema_efetivo_sha256": "4b12034484ee51fa682c6ab141605770f10d3df1e04f2d994e7e1b64249231f0",
+  "testes": {
+    "comando": ".venv/bin/python -m unittest discover -s tests -v",
+    "arquivo": "docs/evidencia-testes-021.txt",
+    "sha256": "8296a1e2ef6b62bd91f8531811999da581c28bf3e8ff5da688723367e985949a",
+    "executados": 18,
+    "aprovados": 18,
+    "falhas": 0
+  },
+  "correcoes": {
+    "A": "Qualificação cumulativa e anterior de sinais; testes 09 e 13 a 17.",
+    "B": "Auto-hash e tabela de hashes desatualizada removidos do JSON 020; manifesto 021 registra os hashes finais.",
+    "C": "Contrato sem resíduo gu_v2_ para unlinked; regra gq_v2_/gu_v2_/ul_v1_ inequívoca.",
+    "D": "Teste 18 comprova payload e hash iguais para texto NFC composto e decomposto."
+  },
+  "cobertura_manifesto": "docs/hashes-sha256-021.txt cobre todos os arquivos de docs/, inclusive este JSON, o relatorio 021 e os demais documentos, exceto o proprio manifesto.",
+  "arquivos_publicados": {
+    "docs/codigo-fase0/bootstrap.py": "f20acd15758679e81cc596fff0bfa5c80e7e524fe978893bbd4531d6802b0bac",
+    "docs/codigo-fase0/clock.py": "e84ce7155e50e2bf871bf702448e235afd90768cd7c7fef747fd599f0302cb2c",
+    "docs/codigo-fase0/config.py": "3cb35a72b7b97190336f97e9cbf979ed97bd2e99afdf5ad755e7e77fe20bfda3",
+    "docs/codigo-fase0/corujao.py": "e8a710fc6ffbd1aae4f8d1cd69899d2b21d367eccb2e4866973cc7d201ab8a19",
+    "docs/codigo-fase0/db.py": "77d7024401543303806307653133272696ce6730ff9573d56d94fd9241cbce39",
+    "docs/codigo-fase0/identity.py": "987ddcaa82d9c8c3a96ff5c2c7fea71db0f1e534ceeaa07db820023baad3ae56",
+    "docs/codigo-fase0/migrations.py": "564c86f45a4779136070680c730a28088f12dd1753a3857b98dfe2b775154c51",
+    "docs/codigo-fase0/pyproject.toml": "7cc0647cd7a37784fb7890b43412bbec086f65fa427954065d130a10927f7c52",
+    "docs/codigo-fase0/temporal.py": "c5f8cbf02de43c2281af4a05fda1a65c4b44e3df5f3a3183afd8424202265967",
+    "docs/codigo-fase0/test_fase0.py": "60b9378d494498ca8d410a7e9e90fca33cdbfef87279ccc34324d4adf531b81a",
+    "docs/contrato-fase0.md": "b501a891ffaada099e3fcdce41a99df25441095b1460c2377fe7d0692f51d70a",
+    "docs/evidencia-testes-020.txt": "a119d82e7c28fb8585680347741a297ba0c4e475ae42592b27fba3a568080c2e",
+    "docs/evidencia-testes-021.txt": "8296a1e2ef6b62bd91f8531811999da581c28bf3e8ff5da688723367e985949a",
+    "docs/evidencia-testes.txt": "3f6cace40e964505ef18f7b8de0a1a1190dc35771dacc9c93307181d240e4335",
+    "docs/evidencia-verificacao-020.json": "1e26abcc9abf97a3a6e9f694663bc050158c8dc7d46c75a48b25524619bfffa1",
+    "docs/evidencia-verificacao.json": "61fc637d16af14a73e727675a25b3289b32981829c6a5f95f44517372baf7fd0",
+    "docs/hashes-sha256-020.txt": "fa99270842f66f42ebaaf33be3e24568e50324d987778d931aba0a868a851fbf",
+    "docs/relatorio-fase0.md": "e97bc5055adc8940edf42bf4e065923a85f2cea49eb6dc33bf3fafcd6c835efe",
+    "docs/relatorio-solicitacao020.md": "d651afee4d47b71d38cff1e1b88e3dbf4e603c5e316ea267823b7776f613586d",
+    "docs/schema-efetivo.sql": "4b12034484ee51fa682c6ab141605770f10d3df1e04f2d994e7e1b64249231f0",
+    "docs/vetores-hash.md": "caa04d01359a9709dcfa5570506b299d7c47689994a1ff7391f532dc8a71165b"
+  }
+}

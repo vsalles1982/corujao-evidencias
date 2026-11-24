@@ -189,7 +189,36 @@ class Fase0TestCase(unittest.TestCase):
         )
         return int(cur.lastrowid), source_id, route_date_id
 
-    # --- dez testes autorizados ---------------------------------------
+    @staticmethod
+    def index_signal(
+        *,
+        source_code: str = "google_flights",
+        role: str = "indexer",
+        captured_at: str = "2026-11-24T02:00:00Z",
+    ) -> dict[str, object]:
+        return {
+            "role": role,
+            "semantics": "primeira aparição comprovada no índice da plataforma",
+            "source_code": source_code,
+            "captured_at": captured_at,
+            "contract": "google-flights-index-v1",
+        }
+
+    def observe_quote(
+        self,
+        quote_id: int,
+        source_id: int,
+        route_date_id: int,
+        observed_at: str = "2026-11-24T01:30:00Z",
+    ) -> None:
+        self.conn.execute(
+            "INSERT INTO observations(route_date_id, source_id, kind, identity_version, "
+            "identity_hash, generic_quote_id, observed_at, price_minor, currency, created_at) "
+            "VALUES(?, ?, 'generic_quote', 'v2', 'gq_test', ?, ?, 118000, 'BRL', ?)",
+            (route_date_id, source_id, quote_id, observed_at, observed_at),
+        )
+
+    # --- testes autorizados -------------------------------------------
     def test_01_criacao_inicial_do_banco(self) -> None:
         report = integrity_report(self.conn)
         self.assertEqual(self.applied, ["0001", "0002"])
@@ -446,28 +475,22 @@ class Fase0TestCase(unittest.TestCase):
         self.assertEqual(row["first_seen_at"], "2026-11-24T01:30:00Z")
         self.assertEqual(row["last_seen_at"], "2026-11-24T03:00:00Z")
 
-        signal = {
-            "role": "indexer",
-            "semantics": "primeira aparição comprovada no índice da plataforma",
-            "source_code": "google_flights",
-            "captured_at": "2026-11-24T02:00:00Z",
-            "contract": "google-flights-index-v1",
-        }
-        self.assertTrue(register_indexing_signal(
-            self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", signal
-        ))
-        self.assertFalse(register_indexing_signal(
-            self.conn, "generic_quotes", quote_id, "2026-11-24T02:30:00Z", signal
-        ))
-        self.assertIsNone(compute_lead_time(
-            identity_valid=True, equivalence_status="unknown",
-            first_seen="2026-11-24T01:30:00Z", indexed="2026-11-24T02:00:00Z",
-            indexing_signal_documented=True,
-        ))
-        self.assertEqual(recompute_lead_time(self.conn, "generic_quotes", quote_id), None)
+        self.source("google_flights", "reference")
         self.conn.execute(
             "UPDATE generic_quotes SET equivalence_status = 'equivalent' WHERE id = ?", (quote_id,)
         )
+        signal = self.index_signal()
+        self.assertTrue(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", signal
+        ))
+        later = self.index_signal(captured_at="2026-11-24T02:30:00Z")
+        self.assertFalse(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:30:00Z", later
+        ))
+        row = self.conn.execute(
+            "SELECT indexed_at, lead_time_seconds FROM generic_quotes WHERE id = ?", (quote_id,)
+        ).fetchone()
+        self.assertEqual(row["indexed_at"], "2026-11-24T02:00:00Z")
         self.assertEqual(recompute_lead_time(self.conn, "generic_quotes", quote_id), 1800)
 
     def test_10_fontes_estado_inicial_desabilitado(self) -> None:
@@ -571,6 +594,114 @@ class Fase0TestCase(unittest.TestCase):
         self.assertNotIn("CHECK (operational_enabled = 0)", ddl)
         self.assertEqual(apply_migrations(self.conn), [])
         self.assertEqual(list(self.conn.execute("PRAGMA foreign_key_check")), [])
+
+    def test_13_sinal_equivalencia_desconhecida_nao_qualifica(self) -> None:
+        quote_id, source_id, route_date_id = self.quote_row()
+        self.observe_quote(quote_id, source_id, route_date_id)
+        self.source("google_flights", "reference")
+        self.assertFalse(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", self.index_signal()
+        ))
+        row = self.conn.execute(
+            "SELECT indexed_at, indexing_signal_json, lead_time_seconds "
+            "FROM generic_quotes WHERE id = ?", (quote_id,)
+        ).fetchone()
+        self.assertIsNone(row["indexed_at"])
+        self.assertIsNone(row["indexing_signal_json"])
+        self.assertIsNone(row["lead_time_seconds"])
+        self.assertIsNone(recompute_lead_time(self.conn, "generic_quotes", quote_id))
+
+    def test_14_sinal_fonte_inexistente_rejeitado(self) -> None:
+        quote_id, source_id, route_date_id = self.quote_row()
+        self.observe_quote(quote_id, source_id, route_date_id)
+        self.conn.execute(
+            "UPDATE generic_quotes SET equivalence_status = 'equivalent' WHERE id = ?", (quote_id,)
+        )
+        signal = self.index_signal(source_code="fonte_inexistente")
+        self.assertFalse(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", signal
+        ))
+        self.assertIsNone(self.conn.execute(
+            "SELECT indexed_at FROM generic_quotes WHERE id = ?", (quote_id,)
+        ).fetchone()[0])
+
+    def test_15_sinal_fonte_sem_papel_rejeitado(self) -> None:
+        quote_id, source_id, route_date_id = self.quote_row()
+        self.observe_quote(quote_id, source_id, route_date_id)
+        self.conn.execute(
+            "UPDATE generic_quotes SET equivalence_status = 'equivalent' WHERE id = ?", (quote_id,)
+        )
+        for role in ("indexer", "validator"):
+            signal = self.index_signal(source_code="decolar", role=role)
+            self.assertFalse(register_indexing_signal(
+                self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", signal
+            ))
+        self.assertIsNone(self.conn.execute(
+            "SELECT indexed_at FROM generic_quotes WHERE id = ?", (quote_id,)
+        ).fetchone()[0])
+
+    def test_16_sinal_valido_e_primeira_observacao(self) -> None:
+        quote_id, source_id, route_date_id = self.quote_row()
+        self.observe_quote(quote_id, source_id, route_date_id)
+        self.source("google_flights", "reference")
+        self.conn.execute(
+            "UPDATE generic_quotes SET equivalence_status = 'equivalent' WHERE id = ?", (quote_id,)
+        )
+        self.assertTrue(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", self.index_signal()
+        ))
+        later = self.index_signal(captured_at="2026-11-24T02:30:00Z")
+        self.assertFalse(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:30:00Z", later
+        ))
+        row = self.conn.execute(
+            "SELECT indexed_at, indexing_signal_json FROM generic_quotes WHERE id = ?", (quote_id,)
+        ).fetchone()
+        self.assertEqual(row["indexed_at"], "2026-11-24T02:00:00Z")
+        self.assertIn("2026-11-24T02:00:00Z", row["indexing_signal_json"])
+        self.assertEqual(recompute_lead_time(self.conn, "generic_quotes", quote_id), 1800)
+
+    def test_17_equivalencia_tardia_nao_gera_lead_time_retroativo(self) -> None:
+        quote_id, source_id, route_date_id = self.quote_row()
+        self.observe_quote(quote_id, source_id, route_date_id)
+        self.source("google_flights", "reference")
+        self.assertFalse(register_indexing_signal(
+            self.conn, "generic_quotes", quote_id, "2026-11-24T02:00:00Z", self.index_signal()
+        ))
+        self.conn.execute(
+            "UPDATE generic_quotes SET equivalence_status = 'equivalent' WHERE id = ?", (quote_id,)
+        )
+        self.assertIsNone(recompute_lead_time(self.conn, "generic_quotes", quote_id))
+        row = self.conn.execute(
+            "SELECT indexed_at, indexing_signal_json, lead_time_seconds "
+            "FROM generic_quotes WHERE id = ?", (quote_id,)
+        ).fetchone()
+        self.assertIsNone(row["indexed_at"])
+        self.assertIsNone(row["indexing_signal_json"])
+        self.assertIsNone(row["lead_time_seconds"])
+
+    def test_18_normalizacao_nfc_texto_acentuado(self) -> None:
+        from corujao.identity import canonical_json, normalize
+
+        composed = "econômica"          # U+00F4
+        decomposed = "econo\u0302mica"  # e + acento combinante
+
+        first, first_raw = unlinked_local_identity_hash(
+            source_code="decolar", origin_iata="GIG", destination_iata="GRU",
+            departure_date="2026-12-08", return_date=None, trip_type="oneway",
+            passengers_value=PAX, cabin=composed,
+        )
+        second, second_raw = unlinked_local_identity_hash(
+            source_code="decolar", origin_iata="GIG", destination_iata="GRU",
+            departure_date="2026-12-08", return_date=None, trip_type="oneway",
+            passengers_value=PAX, cabin=decomposed,
+        )
+        self.assertEqual(normalize(decomposed), composed)
+        self.assertEqual(first, second)
+        self.assertEqual(first_raw, second_raw)
+        self.assertEqual(json.loads(first_raw)["cabin"], composed)
+        self.assertEqual(canonical_json(json.loads(second_raw)), first_raw)
+        self.assertTrue(first.startswith("ul_v1_"))
 
 
 if __name__ == "__main__":

@@ -49,12 +49,16 @@ Adiadas, corretamente ausentes: `source_configs`, `source_runs`, `evidence`
 
 - `first_seen_at` é o menor `observed_at` efetivamente registrado, mantido por
   trigger `AFTER INSERT` em `observations`, por identidade e fonte.
-- `indexed_at` só é gravado por `register_indexing_signal()`, que exige papel de
-  indexador/validador, semântica declarada, `source_code`, `captured_at` e
-  contrato da fonte. Primeira observação comprovada vence; não há inferência.
+- `indexed_at` só é gravado por `register_indexing_signal()`, no momento em que
+  o sinal é recebido. A qualificação é cumulativa e anterior: exige identidade
+  comprovada, `equivalence_status = 'equivalent'` já declarado, fonte existente
+  com papel de indexador/validador, semântica declarada, `source_code`,
+  `captured_at` e contrato da fonte. Primeira observação qualificada vence;
+  sinal posterior não substitui a primeira e mudança posterior de equivalência
+  não gera lead time retroativo.
 - `lead_time_seconds = indexed_at - first_seen_at`, somente com identidade
   válida, `equivalence_status = 'equivalent'`, timestamps válidos e sinal de
-  indexação documentado; `null` caso contrário.
+  indexação documentado no ato da observação; `null` caso contrário.
 - Cotação genérica nunca afirma descoberta anterior a indexadores; ausência de
   `indexed_at` não prova ausência de indexação na internet.
 
@@ -80,11 +84,13 @@ mais recente; não foram reinterpretados silenciosamente:
   017-R simplificou: `equivalent` exige identidade comprovada e economicidade
   comparável; metadados ausentes viram sinalização; `fare_divergent` fica
   reservado a conflito material declarado. **Implementado:** forma simplificada.
-3. Não havia vetor publicado para o hash de `unlinked_local`; a Fase 0 usava
-   provisoriamente `gu_v2_`, igual ao Caminho B. A Solicitação 020 decidiu o
-   prefixo exclusivo `ul_v1_`.
-  `gu_v2_` com `path='unlinked'` explícito, sem inventar novo prefixo.
-  **Resolvido pela Solicitação 020:** prefixo exclusivo `ul_v1_`.
+3. A Fase 0 usava provisoriamente `gu_v2_` para o local sem vínculo, o mesmo
+   prefixo do Caminho B; essa afirmação está retirada. Regra final inequívoca:
+   Caminho A (com `query_context_hash`) usa `gq_v2_`; Caminho B (sem contexto,
+   com `source_query_id`) usa `gu_v2_`; local sem vínculo usa exclusivamente
+   `ul_v1_`. `unlinked_local` existe somente em `observations`, sem
+   `quote_comparison_key`, sem comparação entre fontes e sem lead time.
+   **Resolvido pela Solicitação 020 e confirmado pela Solicitação 021.**
 4. Não há DDL literal registrado nas revisões anteriores; o esquema foi
    derivado das listas de campos e regras fechadas, com tipagem SQLite
    explícita. `docs/schema-efetivo.sql` registra o resultado para revisão.
