@@ -187,9 +187,9 @@ contém seu hash, por definição. Hashes de referência:
 |---|---|
 | `codigo-fase0/temporal.py` | `c5f8cbf02de43c2281af4a05fda1a65c4b44e3df5f3a3183afd8424202265967` |
 | `codigo-fase0/test_fase0.py` | `60b9378d494498ca8d410a7e9e90fca33cdbfef87279ccc34324d4adf531b81a` |
-| `contrato-fase0.md` | `b501a891ffaada099e3fcdce41a99df25441095b1460c2377fe7d0692f51d70a` |
+| `contrato-fase0.md` | `61f2268688b6f26ec0c16e726e7ccdcd8c2c74decf2932b9a66ab41069d93157` (revisado na Solicitação 022) |
 | `evidencia-verificacao-020.json` | `1e26abcc9abf97a3a6e9f694663bc050158c8dc7d46c75a48b25524619bfffa1` |
-| `evidencia-verificacao-021.json` | `c0ec8db91517a5f14af7b4b40fea0ccc774553af7e2254db9b009b3b4b149314` |
+| `evidencia-verificacao-021.json` | `77f1699f660f950f84118c563ed6ba5b4a39850083c3c31d5a00b7cf11b143aa` |
 | `evidencia-testes-021.txt` | `8296a1e2ef6b62bd91f8531811999da581c28bf3e8ff5da688723367e985949a` |
 
 Nenhum JSON de evidência contém o próprio hash. O manifesto `020` está marcado

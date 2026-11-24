@@ -84,13 +84,13 @@ mais recente; não foram reinterpretados silenciosamente:
   017-R simplificou: `equivalent` exige identidade comprovada e economicidade
   comparável; metadados ausentes viram sinalização; `fare_divergent` fica
   reservado a conflito material declarado. **Implementado:** forma simplificada.
-3. A Fase 0 usava provisoriamente `gu_v2_` para o local sem vínculo, o mesmo
-   prefixo do Caminho B; essa afirmação está retirada. Regra final inequívoca:
-   Caminho A (com `query_context_hash`) usa `gq_v2_`; Caminho B (sem contexto,
-   com `source_query_id`) usa `gu_v2_`; local sem vínculo usa exclusivamente
-   `ul_v1_`. `unlinked_local` existe somente em `observations`, sem
-   `quote_comparison_key`, sem comparação entre fontes e sem lead time.
-   **Resolvido pela Solicitação 020 e confirmado pela Solicitação 021.**
+3. Regra normativa final, sem resíduos históricos: Caminho A (com
+   `query_context_hash`) usa `gq_v2_`; Caminho B (sem contexto, com
+   `source_query_id`) usa `gu_v2_`; registro local sem vínculo usa
+   exclusivamente `ul_v1_`. `unlinked_local` pertence exclusivamente a
+   `observations`, não utiliza `quote_comparison_key`, não participa de
+   comparação entre fontes e não gera lead time.
+   **Resolvido pela Solicitação 020, confirmado pelas Solicitações 021 e 022.**
 4. Não há DDL literal registrado nas revisões anteriores; o esquema foi
    derivado das listas de campos e regras fechadas, com tipagem SQLite
    explícita. `docs/schema-efetivo.sql` registra o resultado para revisão.
