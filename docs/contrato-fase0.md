@@ -15,7 +15,7 @@ e HANDOFF_MASTER_corujao.md.
 | `sources` | grupo-piloto com papel, avaliação e habilitação separadas |
 | `settings` | janela, fuso, retenção hipótese, porta prevista e câmbio pendente |
 | `observations` | observação temporal de preço; classe exclusiva por linha |
-| `generic_quotes` | cotação genérica, Caminhos A/B e estado `unlinked_local` |
+| `generic_quotes` | cotação genérica vinculável, somente Caminhos A e B |
 | `identified_offers` | oferta identificada com chave canônica de voo |
 
 Adiadas, corretamente ausentes: `source_configs`, `source_runs`, `evidence`
@@ -26,9 +26,13 @@ Adiadas, corretamente ausentes: `source_configs`, `source_runs`, `evidence`
 - Caminho A: `quote_identity_hash` com `query_context_hash`, prefixo `gq_v2_`.
 - Caminho B: sem contexto, com `source_query_id`, prefixo `gu_v2_`; a chave
   `query_context_hash` é **omitida**, nunca `null` canônico.
-- Sem contexto e sem ID estável: `path='unlinked'` e
-  `link_status='unlinked_local'`. O texto `incomplete_offer` não existe no enum.
-- `quote_comparison_key` usa `qc_v2_` e remove apenas `source_code`.
+- Sem contexto e sem ID estável: `path='unlinked'`,
+  `link_status='unlinked_local'` e prefixo exclusivo `ul_v1_` (Solicitação 020).
+  A identidade fica em `observations`, nunca em `generic_quotes`; não há
+  `source_query_id`, `query_context_hash`, `quote_comparison_key`, comparação
+  entre fontes ou cálculo de lead time. O texto `incomplete_offer` não existe.
+- `quote_comparison_key` usa `qc_v2_` e remove apenas `source_code`; a função
+  rejeita explicitamente o payload `unlinked_local`.
 - `offer_identity_hash` usa `io_v1_` e inclui `source_code`.
 - `canonical_flight_key` usa `cf_v1_` e remove `source_code` e
   `operating_airline_code`.
@@ -58,7 +62,9 @@ Adiadas, corretamente ausentes: `source_configs`, `source_runs`, `evidence`
 
 `latam` (primária candidata), `decolar` (OTA complementar), `turismocity`
 (validadora) e `google_flights` (referência). Todas com
-`operational_enabled = 0` e `evaluation_status = not_evaluated`. Trigger
+`operational_enabled = 0` e `evaluation_status = not_evaluated`. Pela migração
+`0002`, o domínio de `operational_enabled` passou a ser `0`/`1`: a habilitação
+é estruturalmente possível, mas nenhuma fonte foi habilitada. Trigger
 dedicado impede que `google_flights` vire `identified_offers`.
 
 ## 5. Contradições históricas sinalizadas ao Tech Lead
@@ -74,9 +80,14 @@ mais recente; não foram reinterpretados silenciosamente:
   017-R simplificou: `equivalent` exige identidade comprovada e economicidade
   comparável; metadados ausentes viram sinalização; `fare_divergent` fica
   reservado a conflito material declarado. **Implementado:** forma simplificada.
-3. Não há vetor publicado para o hash de `unlinked_local`. Foi adotado o prefixo
+3. Não havia vetor publicado para o hash de `unlinked_local`; a Fase 0 usava
+   provisoriamente `gu_v2_`, igual ao Caminho B. A Solicitação 020 decidiu o
+   prefixo exclusivo `ul_v1_`.
   `gu_v2_` com `path='unlinked'` explícito, sem inventar novo prefixo.
-  **Pendente de confirmação formal do Tech Lead.**
-4. não há DDL literal registrado nas revisões anteriores; o esquema foi
+  **Resolvido pela Solicitação 020:** prefixo exclusivo `ul_v1_`.
+4. Não há DDL literal registrado nas revisões anteriores; o esquema foi
    derivado das listas de campos e regras fechadas, com tipagem SQLite
    explícita. `docs/schema-efetivo.sql` registra o resultado para revisão.
+5. A restrição original `CHECK (operational_enabled = 0)` impedia habilitação
+   futura. A Solicitação 020 determinou domínio `0`/`1` via migração rastreável
+   `0002`, sem reescrever a migração `0001`. **Resolvido.**

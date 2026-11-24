@@ -1,0 +1,17 @@
+test_01_criacao_inicial_do_banco (test_fase0.Fase0TestCase.test_01_criacao_inicial_do_banco) ... ok
+test_02_bootstrap_sem_duplicacao (test_fase0.Fase0TestCase.test_02_bootstrap_sem_duplicacao) ... ok
+test_03_migracoes_rastreaveis (test_fase0.Fase0TestCase.test_03_migracoes_rastreaveis) ... ok
+test_04_integridade_referencial_e_estrutural (test_fase0.Fase0TestCase.test_04_integridade_referencial_e_estrutural) ... ok
+test_05_unicidade_e_protecao_de_identidade (test_fase0.Fase0TestCase.test_05_unicidade_e_protecao_de_identidade) ... ok
+test_06_seis_vetores_de_hash (test_fase0.Fase0TestCase.test_06_seis_vetores_de_hash) ... ok
+test_07_caminhos_a_e_b (test_fase0.Fase0TestCase.test_07_caminhos_a_e_b) ... ok
+test_08_separacao_generic_quote_e_identified_offer (test_fase0.Fase0TestCase.test_08_separacao_generic_quote_e_identified_offer) ... ok
+test_09_first_seen_indexed_e_lead_time (test_fase0.Fase0TestCase.test_09_first_seen_indexed_e_lead_time) ... ok
+test_10_fontes_estado_inicial_desabilitado (test_fase0.Fase0TestCase.test_10_fontes_estado_inicial_desabilitado) ... ok
+test_11_ul_v1_estabilidade_e_distincao (test_fase0.Fase0TestCase.test_11_ul_v1_estabilidade_e_distincao) ... ok
+test_12_migracao_0002_dominio_sources (test_fase0.Fase0TestCase.test_12_migracao_0002_dominio_sources) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.173s
+
+OK

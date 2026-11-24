@@ -1,0 +1,116 @@
+{
+  "data": "2026-11-24",
+  "python": "3.14.8",
+  "sqlite_version": "3.54.0",
+  "migrations": [
+    [
+      "0001",
+      "2026-11-24T09:26:06.805750Z",
+      "Cria as nove tabelas da Fase 0, índices parciais e triggers de proteção."
+    ],
+    [
+      "0002",
+      "2026-11-24T10:06:45.619654Z",
+      "Permite 0 e 1 em sources.operational_enabled e separa unlinked_local de generic_quotes."
+    ]
+  ],
+  "sources_ddl_aceita_0_e_1": true,
+  "sources_ddl_antiga_presente": false,
+  "tabelas": [
+    [
+      "bootstraps"
+    ],
+    [
+      "generic_quotes"
+    ],
+    [
+      "identified_offers"
+    ],
+    [
+      "observations"
+    ],
+    [
+      "route_dates"
+    ],
+    [
+      "routes"
+    ],
+    [
+      "schema_migrations"
+    ],
+    [
+      "settings"
+    ],
+    [
+      "sources"
+    ]
+  ],
+  "indices": [
+    "uq_offer_oneway",
+    "uq_offer_roundtrip",
+    "uq_quote_source_id",
+    "uq_route_date_oneway",
+    "uq_route_date_roundtrip"
+  ],
+  "triggers": 17,
+  "integrity_check": "ok",
+  "foreign_key_check": [],
+  "journal_mode": "wal",
+  "foreign_keys": 1,
+  "busy_timeout_ms": 5000,
+  "fontes": [
+    [
+      "decolar",
+      "not_evaluated",
+      0
+    ],
+    [
+      "google_flights",
+      "not_evaluated",
+      0
+    ],
+    [
+      "latam",
+      "not_evaluated",
+      0
+    ],
+    [
+      "turismocity",
+      "not_evaluated",
+      0
+    ]
+  ],
+  "contagens": {
+    "schema_migrations": 2,
+    "bootstraps": 1,
+    "routes": 0,
+    "route_dates": 0,
+    "settings": 11,
+    "observations": 0,
+    "generic_quotes": 0,
+    "identified_offers": 0,
+    "sources": 4
+  },
+  "schema_efetivo_sha256": "4b12034484ee51fa682c6ab141605770f10d3df1e04f2d994e7e1b64249231f0",
+  "arquivos_publicados": {
+    "docs/codigo-fase0/bootstrap.py": "f20acd15758679e81cc596fff0bfa5c80e7e524fe978893bbd4531d6802b0bac",
+    "docs/codigo-fase0/clock.py": "e84ce7155e50e2bf871bf702448e235afd90768cd7c7fef747fd599f0302cb2c",
+    "docs/codigo-fase0/config.py": "3cb35a72b7b97190336f97e9cbf979ed97bd2e99afdf5ad755e7e77fe20bfda3",
+    "docs/codigo-fase0/corujao.py": "e8a710fc6ffbd1aae4f8d1cd69899d2b21d367eccb2e4866973cc7d201ab8a19",
+    "docs/codigo-fase0/db.py": "77d7024401543303806307653133272696ce6730ff9573d56d94fd9241cbce39",
+    "docs/codigo-fase0/identity.py": "987ddcaa82d9c8c3a96ff5c2c7fea71db0f1e534ceeaa07db820023baad3ae56",
+    "docs/codigo-fase0/migrations.py": "564c86f45a4779136070680c730a28088f12dd1753a3857b98dfe2b775154c51",
+    "docs/codigo-fase0/pyproject.toml": "7cc0647cd7a37784fb7890b43412bbec086f65fa427954065d130a10927f7c52",
+    "docs/codigo-fase0/temporal.py": "25e20b2e6cc231e813481c0cd48a8712ff73d89f2256dac34ebf5e413f92fc7c",
+    "docs/codigo-fase0/test_fase0.py": "2461968cd06d158506a3cabb31459f73e2f77643d5d0449cea73aac79e5e6b2b",
+    "docs/contrato-fase0.md": "dac20ab8f3c8896bf8b530f46421b330687fbb539ed4ab29408d10adf7ebac6b",
+    "docs/evidencia-testes-020.txt": "a119d82e7c28fb8585680347741a297ba0c4e475ae42592b27fba3a568080c2e",
+    "docs/evidencia-testes.txt": "3f6cace40e964505ef18f7b8de0a1a1190dc35771dacc9c93307181d240e4335",
+    "docs/evidencia-verificacao-020.json": "050682c748f011b08085775015a73fd71288438bdbc339532acd0f3ff36de421",
+    "docs/evidencia-verificacao.json": "61fc637d16af14a73e727675a25b3289b32981829c6a5f95f44517372baf7fd0",
+    "docs/relatorio-fase0.md": "e97bc5055adc8940edf42bf4e065923a85f2cea49eb6dc33bf3fafcd6c835efe",
+    "docs/relatorio-solicitacao020.md": "d651afee4d47b71d38cff1e1b88e3dbf4e603c5e316ea267823b7776f613586d",
+    "docs/schema-efetivo.sql": "4b12034484ee51fa682c6ab141605770f10d3df1e04f2d994e7e1b64249231f0",
+    "docs/vetores-hash.md": "caa04d01359a9709dcfa5570506b299d7c47689994a1ff7391f532dc8a71165b"
+  }
+}

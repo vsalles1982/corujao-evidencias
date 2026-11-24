@@ -83,10 +83,39 @@ também não participa da identidade.
 Payload do vetor 5 com `source_code` e `operating_airline_code` removidos.
 Identifica o itinerário, não a tarifa.
 
-## Caso sem contexto e sem ID estável
+## 7. Identidade local incompleta — `ul_v1_` (Solicitação 020)
 
-Não há vetor publicado para esse caso. A implementação usa
-`path='unlinked'`, `link_status='unlinked_local'` e o prefixo `gu_v2_`, sem
-inventar um novo prefixo e sem usar `incomplete_offer`. Este ponto está
-registrado como pendência de confirmação formal em
-`docs/contrato-fase0.md` e no relatório.
+Os seis vetores aprovados acima **não foram alterados**. O caso sem contexto e
+sem ID estável deixou de compartilhar o prefixo `gu_v2_` do Caminho B e passou
+a ter convenção exclusiva:
+
+- prefixo: `ul_v1_`;
+- `identity_version = "v1"`;
+- `path = "unlinked"` e `link_status = "unlinked_local"`;
+- sem `source_query_id`, sem `query_context_hash`, sem
+  `quote_comparison_key`, sem comparação entre fontes e sem lead time;
+- registrado em `observations`, nunca em `generic_quotes`;
+- não gera equivalência artificial entre identidades locais.
+
+Hash de referência, calculado com o payload canônico abaixo:
+
+```text
+ul_v1_04a9fe3c0fb396d9d211492b3d15d43bab1fa68c00b8401c406934fd473c41b2
+```
+
+Payload canônico:
+
+```json
+{"cabin":"economy","departure_date":"2026-12-08","destination_iata":"GRU","identity_version":"v1","link_status":"unlinked_local","origin_iata":"GIG","passengers":{"adults":1,"children":0,"infants":0},"path":"unlinked","return_date":null,"source_code":"decolar","trip_type":"oneway"}
+```
+
+O payload inclui `source_code` para manter a identidade restrita à fonte local;
+não inclui nenhum identificador de consulta inventado. A geração usa a mesma
+canonicalização dos demais vetores (NFC, chaves ordenadas, JSON compacto,
+SHA-256 em hex minúsculo), trocando apenas o prefixo.
+
+Evidências de estabilidade e distinção: `test_11_ul_v1_estabilidade_e_distincao`
+compara variações de caixa/composição Unicode, confirma o payload exato e
+demonstra que o resultado difere do Caminho B
+(`gu_v2_a06da76bb5222722cd3d0f7143d746f55586dd63d6e19d9d0967545a8f795075`),
+além de verificar que `quote_comparison_key` rejeita o payload local.

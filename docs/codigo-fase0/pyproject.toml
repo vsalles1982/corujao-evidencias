@@ -1,0 +1,16 @@
+[build-system]
+requires = []
+build-backend = ""
+
+[project]
+name = "corujao"
+version = "0.1.0"
+description = "Fundação local da Fase 0 do Corujão — produto independente da SuiteViagem"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.corujao]
+phase = "fase-0"
+supported_timezone = "America/Sao_Paulo"
+reserved_port = 8790
+forbidden_port = 8787

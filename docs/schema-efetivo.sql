@@ -47,22 +47,6 @@ CREATE UNIQUE INDEX uq_route_date_roundtrip
   ON route_dates(route_id, departure_date, return_date, adults, children,
                  infants, cabin, COALESCE(query_context_hash, ''))
   WHERE return_date IS NOT NULL;
-CREATE TABLE sources (
-  id INTEGER PRIMARY KEY,
-  code TEXT NOT NULL UNIQUE,
-  name TEXT NOT NULL,
-  kind TEXT NOT NULL CHECK (kind IN ('airline', 'ota', 'metasearch')),
-  pilot_role TEXT NOT NULL CHECK (pilot_role IN
-    ('primary_candidate', 'complementary_ota', 'validator', 'reference')),
-  evaluation_status TEXT NOT NULL DEFAULT 'not_evaluated'
-    CHECK (evaluation_status IN ('not_evaluated', 'in_evaluation',
-                                 'technically_approved', 'rejected', 'blocked')),
-  evaluation_notes TEXT,
-  operational_enabled INTEGER NOT NULL DEFAULT 0 CHECK (operational_enabled = 0),
-  terms_url TEXT,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-) STRICT;
 CREATE TABLE settings (
   key TEXT PRIMARY KEY,
   value_json TEXT NOT NULL,
@@ -306,4 +290,32 @@ BEGIN
            WHEN last_seen_at IS NULL OR NEW.observed_at > last_seen_at
            THEN NEW.observed_at ELSE last_seen_at END
    WHERE id = NEW.identified_offer_id;
+END;
+CREATE TABLE "sources" (
+  id INTEGER PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('airline', 'ota', 'metasearch')),
+  pilot_role TEXT NOT NULL CHECK (pilot_role IN
+    ('primary_candidate', 'complementary_ota', 'validator', 'reference')),
+  evaluation_status TEXT NOT NULL DEFAULT 'not_evaluated'
+    CHECK (evaluation_status IN ('not_evaluated', 'in_evaluation',
+                                 'technically_approved', 'rejected', 'blocked')),
+  evaluation_notes TEXT,
+  operational_enabled INTEGER NOT NULL DEFAULT 0 CHECK (operational_enabled IN (0, 1)),
+  terms_url TEXT,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+) STRICT;
+CREATE TRIGGER trg_gq_no_unlinked_insert
+BEFORE INSERT ON generic_quotes
+WHEN NEW.path = 'unlinked' OR NEW.link_status = 'unlinked_local'
+BEGIN
+  SELECT RAISE(ABORT, 'unlinked_local nao e cotacao vinculavel');
+END;
+CREATE TRIGGER trg_gq_no_unlinked_update
+BEFORE UPDATE OF path, link_status ON generic_quotes
+WHEN NEW.path = 'unlinked' OR NEW.link_status = 'unlinked_local'
+BEGIN
+  SELECT RAISE(ABORT, 'unlinked_local nao e cotacao vinculavel');
 END;
