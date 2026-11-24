@@ -1,0 +1,64 @@
+{
+  "new_migrations": [],
+  "tables": [
+    "bootstraps",
+    "generic_quotes",
+    "identified_offers",
+    "observations",
+    "route_dates",
+    "routes",
+    "schema_migrations",
+    "settings",
+    "sources"
+  ],
+  "table_count": 9,
+  "foreign_key_violations": [],
+  "integrity_check": "ok",
+  "journal_mode": "wal",
+  "foreign_keys": 1,
+  "busy_timeout": 5000,
+  "migrations": [
+    "0001"
+  ],
+  "sources": [
+    {
+      "code": "decolar",
+      "kind": "ota",
+      "pilot_role": "complementary_ota",
+      "evaluation_status": "not_evaluated",
+      "operational_enabled": 0
+    },
+    {
+      "code": "google_flights",
+      "kind": "metasearch",
+      "pilot_role": "reference",
+      "evaluation_status": "not_evaluated",
+      "operational_enabled": 0
+    },
+    {
+      "code": "latam",
+      "kind": "airline",
+      "pilot_role": "primary_candidate",
+      "evaluation_status": "not_evaluated",
+      "operational_enabled": 0
+    },
+    {
+      "code": "turismocity",
+      "kind": "metasearch",
+      "pilot_role": "validator",
+      "evaluation_status": "not_evaluated",
+      "operational_enabled": 0
+    }
+  ],
+  "counts": {
+    "bootstraps": 1,
+    "generic_quotes": 0,
+    "identified_offers": 0,
+    "observations": 0,
+    "route_dates": 0,
+    "routes": 0,
+    "schema_migrations": 1,
+    "settings": 11,
+    "sources": 4
+  }
+}
